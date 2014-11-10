@@ -8,7 +8,7 @@ def use_cassette(*args, **kwargs):
     return VCR(
         cassette_library_dir = os.path.join(os.path.dirname(__file__), 'cassettes', 'emites'),
         match_on = ['url', 'method', 'headers', 'body'],
-        record_mode = 'new_episodes',
+        record_mode = 'once',
     ).use_cassette(*args, **kwargs)
 
 
@@ -41,3 +41,30 @@ with open(os.path.join(os.path.dirname(__file__), CERTIFICATE['path'])) as cert_
         'certificate': cert_handle.read().encode('base-64'),
         'password': CERTIFICATE['password'],
     }
+
+
+TEST_TAKER = {
+    'cnpj': '91762868000184',
+    'fancy_name': 'Empresa de Testes',
+    'social_reason': 'Empresa de Testes Ltda ME',
+    'city_inscription': '00000000',
+    'state_inscription': 'ISENTO',
+    'address': {
+        'state': 'RJ',
+        'city_code': 3304557,
+        'city': 'Rio de Janeiro',
+        'street_type': 'RUA',
+        'street': 'dos testes',
+        'number': 42,
+        'neighborhood_type': 'COM',
+        'neighborhood': 'Centro',
+        'zip_code': '20011020',
+        'country_code': '01058',
+        'country': 'Brasil',
+        'country_abbreviation': 'BR',
+    },
+    'contact': {
+        'phone': '21000000000',
+        'email': 'financeiro@python-emites.test',
+    }
+}

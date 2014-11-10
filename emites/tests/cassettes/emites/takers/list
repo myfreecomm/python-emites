@@ -1,0 +1,40 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      Accept-Encoding: ['gzip, deflate']
+      Authorization: [Basic REQwMDAyN0Y0QTc2RTRCNzkyMDlBQ0JGQkM3MkY2OEU6]
+      Cache-Control: [no-cache]
+      Connection: [keep-alive]
+      Content-Length: ['0']
+      Content-Type: [application/json]
+      User-Agent: [python-emites]
+    method: GET
+    uri: https://sandbox.emites.com.br:443/api/v1/takers
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA61UwW7bMAz9FUPnLrbTJM16WpsZ24p2Hbr0NBSGLNOzVlsSJLmoF+TfR8pO5nXX
+        CD5IJMVHPj55x4TulGeXUXoWMQWvtFVd0+DJWHiRunN/LUI3DQgvtULbjx3LG6meyY/72kKFO1Z7
+        b9xlHDuuykK/zqCVHtxM6HZW2JgbGb+ksefPYF2cJgxxWvC1Lunup2xLBgsNnRw0FdufRafJ/e1x
+        mrszJfdwwuxX283nSe2GWy95k58KZyToY3abbbMJTgnOW92z/RPyxsvSgqN57BiaAWiYrNQuwgng
+        R/dU1xZgyb6Y0xnnYhpoIWhgHLwC+bMutK31MJYNeq0O0dL3udAlYPD5ebJYLi/Q6jxxiSkfbijo
+        tzSHGDZPkjRN5mHOQ0m5780Q/HgVCpqAHX2b+7sDXMgrdVRCdMMxeCgExQYWlIDcaDmtPcjZ9nTr
+        2nInm6HJYDxWlaTJcj118KIgsfNR2uz64Z9uc6RZjPygIJE05bkgxnbM1FqFfuZpclh0GVqO4Giv
+        pOJYKBb+wfSodPVufBI0FFIgkyT+NMEdF6H+PFiWK4Iy9KrGwQhlflHK9+nFar5erREvXS+OpUrl
+        hJXm0EQ6rIF6nFD+xv/le/Z1ex/cWpBYLXAXnjbLWnz8jhPp2yCd6NaXPLoL0quwnT5XvA1t/xca
+        EnaF89J3CBrE8QZ6bMcZCLgOIw/UEwuVtigKlYe/BGJUvHGwf9r/AWRZq9KtBAAA
+    headers:
+      allow: ['GET, POST, HEAD, OPTIONS']
+      connection: [keep-alive]
+      content-encoding: [gzip]
+      content-length: ['561']
+      content-type: [application/json]
+      date: ['Mon, 10 Nov 2014 22:33:28 GMT']
+      server: [nginx/1.4.7]
+      user-agent: [emites-sandbox-v1]
+      vary: [Accept-Encoding, 'Accept, Cookie']
+      x-frame-options: [SAMEORIGIN]
+    status: {code: 200, message: OK}
+version: 1
