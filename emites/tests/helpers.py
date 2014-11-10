@@ -18,11 +18,12 @@ APP_CREDENTIALS = {
 }
 
 CERTIFICATE = {
-    'path': 'certs/test.pfx',
+    'binary_path': 'certs/test.pfx',
+    'text_path': 'certs/test.base64',
     'password': 'associacao',
 }
 
-with open(os.path.join(os.path.dirname(__file__), CERTIFICATE['path'])) as cert_handle:
+with open(os.path.join(os.path.dirname(__file__), CERTIFICATE['text_path']), 'r') as cert_handle:
     TEST_EMITTER = {
         'email': 'financeiro@python-emites.test',
         'cnpj': '91762868000184',
@@ -38,10 +39,9 @@ with open(os.path.join(os.path.dirname(__file__), CERTIFICATE['path'])) as cert_
         'number': 42,
         'zip_code': '20011020',
         'phone': '21000000000',
-        'certificate': cert_handle.read().encode('base-64'),
+        'certificate': cert_handle.read(),
         'password': CERTIFICATE['password'],
     }
-
 
 TEST_TAKER = {
     'cnpj': '91762868000184',

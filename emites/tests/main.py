@@ -55,9 +55,9 @@ class EmittersTest(unittest.TestCase):
         with use_emites_cassette('emitters/create'):
             emitter = self.api_client.emitters.create(**self.post_data)
 
-        self.assertEquals(emitter.id, 12)
-        self.assertEquals(emitter.email, self.post_data['email'])
-        self.assertEquals(emitter.account_id, 56)
+        self.assertEqual(emitter.id, 12)
+        self.assertEqual(emitter.email, self.post_data['email'])
+        self.assertEqual(emitter.account_id, 56)
 
     def test_creation_without_email_fails(self):
         del(self.post_data['email'])
@@ -104,9 +104,9 @@ class EmittersTest(unittest.TestCase):
         with use_emites_cassette('emitters/create_without_street_type'):
             emitter = self.api_client.emitters.create(**self.post_data)
 
-        self.assertEquals(emitter.id, 13)
-        self.assertEquals(emitter.email, self.post_data['email'])
-        self.assertEquals(emitter.account_id, 56)
+        self.assertEqual(emitter.id, 13)
+        self.assertEqual(emitter.email, self.post_data['email'])
+        self.assertEqual(emitter.account_id, 56)
 
     def test_creation_without_street_fails(self):
         del(self.post_data['street'])
@@ -146,8 +146,8 @@ class EmittersTest(unittest.TestCase):
         with use_emites_cassette('emitters/get_from_this_account'):
             emitter = self.api_client.emitters.get(12)
 
-        self.assertEquals(emitter.email, self.post_data['email'])
-        self.assertEquals(emitter.account_id, 56)
+        self.assertEqual(emitter.email, self.post_data['email'])
+        self.assertEqual(emitter.account_id, 56)
 
     def test_emitters_can_be_updated(self):
         # Using PUT
@@ -160,7 +160,7 @@ class EmittersTest(unittest.TestCase):
         with use_emites_cassette('emitters/update_city_inscription'):
             updated_emitter = emitter.save()
 
-        self.assertEquals(updated_emitter.city_inscription, '1111111')
+        self.assertEqual(updated_emitter.city_inscription, '1111111')
 
     def test_emitters_can_be_deleted(self):
         with use_emites_cassette('emitters/get_from_this_account'):
@@ -172,7 +172,7 @@ class EmittersTest(unittest.TestCase):
         with use_emites_cassette('emitters/list_after_deletion'):
             emitters = [item for item in self.api_client.emitters.all()]
 
-        self.assertEquals(emitters, [])
+        self.assertEqual(emitters, [])
 
 
 class TakersTest(unittest.TestCase):
@@ -195,9 +195,9 @@ class TakersTest(unittest.TestCase):
         with use_emites_cassette('takers/create'):
             taker = self.api_client.takers.create(**self.post_data)
 
-        self.assertEquals(taker.id, 11)
-        self.assertEquals(taker.cnpj, self.post_data['cnpj'])
-        self.assertEquals(taker.account_id, 56)
+        self.assertEqual(taker.id, 11)
+        self.assertEqual(taker.cnpj, self.post_data['cnpj'])
+        self.assertEqual(taker.account_id, 56)
 
     def test_creation_without_cnpj_or_cpf_fails(self):
         del(self.post_data['cnpj'])
@@ -215,9 +215,9 @@ class TakersTest(unittest.TestCase):
         with use_emites_cassette('takers/create_without_fancy_name'):
             taker = self.api_client.takers.create(**self.post_data)
 
-        self.assertEquals(taker.id, 12)
-        self.assertEquals(taker.cnpj, self.post_data['cnpj'])
-        self.assertEquals(taker.account_id, 56)
+        self.assertEqual(taker.id, 12)
+        self.assertEqual(taker.cnpj, self.post_data['cnpj'])
+        self.assertEqual(taker.account_id, 56)
 
     def test_creation_without_social_reason_fails(self):
         del(self.post_data['social_reason'])
@@ -265,9 +265,9 @@ class TakersTest(unittest.TestCase):
         with use_emites_cassette('takers/create_without_neighborhood_type'):
             taker = self.api_client.takers.create(**self.post_data)
 
-        self.assertEquals(taker.id, 13)
-        self.assertEquals(taker.cnpj, self.post_data['cnpj'])
-        self.assertEquals(taker.account_id, 56)
+        self.assertEqual(taker.id, 13)
+        self.assertEqual(taker.cnpj, self.post_data['cnpj'])
+        self.assertEqual(taker.account_id, 56)
 
     def test_creation_without_city_fails(self):
         del(self.post_data['address']['city'])
@@ -290,9 +290,9 @@ class TakersTest(unittest.TestCase):
         with use_emites_cassette('takers/create_without_email'):
             taker = self.api_client.takers.create(**self.post_data)
 
-        self.assertEquals(taker.id, 14)
-        self.assertEquals(taker.cnpj, self.post_data['cnpj'])
-        self.assertEquals(taker.account_id, 56)
+        self.assertEqual(taker.id, 14)
+        self.assertEqual(taker.cnpj, self.post_data['cnpj'])
+        self.assertEqual(taker.account_id, 56)
 
     def test_get_taker_from_another_account_fails(self):
         raise NotImplementedError # is not failing
@@ -303,8 +303,8 @@ class TakersTest(unittest.TestCase):
         with use_emites_cassette('takers/get_from_this_account'):
             taker = self.api_client.takers.get(10)
 
-        self.assertEquals(taker.cnpj, self.post_data['cnpj'])
-        self.assertEquals(taker.account_id, 56)
+        self.assertEqual(taker.cnpj, self.post_data['cnpj'])
+        self.assertEqual(taker.account_id, 56)
 
     def test_takers_can_be_updated(self):
         # Using PUT
@@ -315,7 +315,7 @@ class TakersTest(unittest.TestCase):
         with use_emites_cassette('takers/update_city_inscription'):
             updated_taker = taker.save()
 
-        self.assertEquals(updated_taker.city_inscription, '1111111')
+        self.assertEqual(updated_taker.city_inscription, '1111111')
 
     def test_takers_can_be_deleted(self):
         with use_emites_cassette('takers/get_from_this_account'):
@@ -327,4 +327,4 @@ class TakersTest(unittest.TestCase):
         with use_emites_cassette('takers/list_after_deletion'):
             takers = [item for item in self.api_client.takers.all()]
 
-        self.assertEquals(takers, [])
+        self.assertEqual(takers, [])
