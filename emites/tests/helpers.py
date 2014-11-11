@@ -2,7 +2,10 @@
 import os
 from vcr import VCR
 
-__all__ = ['use_cassette', 'APP_CREDENTIALS', 'TEST_EMITTER']
+__all__ = [
+    'use_cassette',
+    'APP_CREDENTIALS', 'TEST_EMITTER', 'TEST_SERVICE_VALUE'
+]
 
 def use_cassette(*args, **kwargs):
     return VCR(
@@ -67,4 +70,11 @@ TEST_TAKER = {
         'phone': '21000000000',
         'email': 'financeiro@python-emites.test',
     }
+}
+
+TEST_SERVICE_VALUE = {
+    'emitter_id': '',
+    'name': u'Testes da api do emites',
+    'service_amount': '99.99',
+    'iss_percentage': '5.00',
 }

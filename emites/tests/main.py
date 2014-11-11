@@ -8,10 +8,10 @@ import api_toolkit
 from emites.main import Emites
 from .helpers import (
     use_cassette as use_emites_cassette,
-    APP_CREDENTIALS, TEST_EMITTER, TEST_TAKER,
+    APP_CREDENTIALS, TEST_EMITTER, TEST_TAKER, TEST_SERVICE_VALUE
 )
 
-__all__ = ['EmitesTest', 'EmittersTest', 'TakersTest']
+__all__ = ['EmitesTest', 'EmittersTest', 'TakersTest', 'ServiceValuesTest']
 
 
 class EmitesTest(unittest.TestCase):
@@ -327,3 +327,91 @@ class TakersTest(unittest.TestCase):
             takers = [item for item in self.api_client.takers.all()]
 
         self.assertEqual(takers, [])
+
+
+class ServiceValuesTest(unittest.TestCase):
+
+    def setUp(self):
+        with use_emites_cassette('collections_options'):
+            self.api_client = Emites(**APP_CREDENTIALS)
+
+        with use_emites_cassette('emitters/get_from_this_account'):
+            self.emitter = self.api_client.emitters.get(12)
+
+        self.post_data = TEST_SERVICE_VALUE.copy()
+        self.post_data['emitter_id'] = self.emitter.id
+
+    def test_service_values_are_a_collection(self):
+        self.assertTrue(isinstance(self.api_client.service_values, api_toolkit.Collection))
+
+    def test_service_values_are_iterable(self):
+        with use_emites_cassette('service_values/list'):
+            service_values = [item for item in self.api_client.service_values.all()]
+
+    def test_service_values_can_be_created(self):
+        with use_emites_cassette('service_values/create'):
+            service_value = self.api_client.service_values.create(**self.post_data)
+
+        self.assertEqual(service_value.id, 37)
+        self.assertEqual(service_value.emitter_id, self.emitter.id)
+        self.assertEqual(service_value.name, self.post_data['name'])
+        self.assertEqual(service_value.service_amount, self.post_data['service_amount'])
+        self.assertEqual(service_value.iss_percentage, self.post_data['iss_percentage'])
+
+    def test_service_values_can_be_created_with_only_name_and_emitter_id(self):
+        del(self.post_data['service_amount'])
+        del(self.post_data['iss_percentage'])
+        with use_emites_cassette('service_values/create_with_minimal_data'):
+            service_value = self.api_client.service_values.create(**self.post_data)
+
+        self.assertEqual(service_value.id, 38)
+        self.assertEqual(service_value.emitter_id, self.emitter.id)
+        self.assertEqual(service_value.name, self.post_data['name'])
+        self.assertEqual(service_value.service_amount, None)
+        self.assertEqual(service_value.iss_percentage, None)
+
+    def test_creation_without_name_fails(self):
+        del(self.post_data['name'])
+        with use_emites_cassette('service_values/create_without_name'):
+            self.assertRaises(requests.HTTPError, self.api_client.service_values.create, **self.post_data)
+
+    def test_creation_without_emitter_id_fails(self):
+        del(self.post_data['emitter_id'])
+        with use_emites_cassette('service_values/create_without_emitter_id'):
+            self.assertRaises(requests.HTTPError, self.api_client.service_values.create, **self.post_data)
+
+    def test_get_service_value_from_another_account_fails(self):
+        with use_emites_cassette('service_values/get_from_another_account'):
+            self.assertRaises(requests.HTTPError, self.api_client.service_values.get, 2)
+
+    def test_get_service_value_from_this_account_works(self):
+        with use_emites_cassette('service_values/get_from_this_account'):
+            service_value = self.api_client.service_values.get(38)
+
+        self.assertEqual(service_value.emitter_id, self.post_data['emitter_id'])
+        self.assertEqual(service_value.id, 38)
+
+    def test_service_values_can_be_updated(self):
+        # Using PUT
+        with use_emites_cassette('service_values/get_from_this_account'):
+            service_value = self.api_client.service_values.get(38)
+
+        service_value.iss_percentage = '0.5'
+        service_value.description = u'Teste da api de alteração de dados de valores de serviço'
+        with use_emites_cassette('service_values/update_iss_percentage_and_description'):
+            updated_service_value = service_value.save()
+
+        self.assertEqual(updated_service_value.iss_percentage, '0.5')
+        self.assertEqual(updated_service_value.description, service_value.description)
+
+    def test_service_values_can_be_deleted(self):
+        with use_emites_cassette('service_values/get_from_this_account'):
+            service_value = self.api_client.service_values.get(38)
+
+        with use_emites_cassette('service_values/delete'):
+            service_value.delete()
+
+        with use_emites_cassette('service_values/list_after_deletion'):
+            service_values = [item for item in self.api_client.service_values.all()]
+
+        self.assertEqual(service_values, [])
