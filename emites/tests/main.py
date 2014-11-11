@@ -295,7 +295,6 @@ class TakersTest(unittest.TestCase):
         self.assertEqual(taker.account_id, 56)
 
     def test_get_taker_from_another_account_fails(self):
-        raise NotImplementedError # is not failing
         with use_emites_cassette('takers/get_from_another_account'):
             self.assertRaises(requests.HTTPError, self.api_client.takers.get, 2)
 
