@@ -352,7 +352,7 @@ class ServiceValuesTest(unittest.TestCase):
         with use_emites_cassette('service_values/create'):
             service_value = self.api_client.service_values.create(**self.post_data)
 
-        self.assertEqual(service_value.id, 37)
+        self.assertEqual(service_value.id, 39)
         self.assertEqual(service_value.emitter_id, self.emitter.id)
         self.assertEqual(service_value.name, self.post_data['name'])
         self.assertEqual(service_value.service_amount, self.post_data['service_amount'])
