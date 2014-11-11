@@ -66,4 +66,71 @@ interactions:
       vary: [Accept-Encoding, 'Accept, Cookie']
       x-frame-options: [SAMEORIGIN]
     status: {code: 200, message: OK}
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      Accept-Encoding: ['gzip, deflate']
+      Authorization: [Basic REQwMDAyN0Y0QTc2RTRCNzkyMDlBQ0JGQkM3MkY2OEU6]
+      Cache-Control: [no-cache]
+      Connection: [keep-alive]
+      Content-Length: ['0']
+      Content-Type: [application/json]
+      User-Agent: [python-emites]
+    method: GET
+    uri: https://sandbox.emites.com.br:443/api/v1/emitters/13
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA61Ty27bMBD8FYHn1JL8iptTg1RoG6QPpMqpKASaWkXbSiRB0obVwP+eXVp2jfZq
+        najh7szOrPQiqg71by9ukh8vonXQ0Em0IVh/k6Ze6nptdhPoMYCfKNNP1i6VFtNtnjIYwPk0n4mr
+        RPQQWlNz94eiZMBBx28eukbsr5JLsX97Omff2FoGuCj/bXn38Wx+K11A2VWXUxpjel88FGVxplSD
+        D84MYv+T0lNAsg0qclc12IGWPXCcZ/jENjtuR049n9FJKmU2OlQRWSwJgV5iXEODWmoF6Mw7O9Cm
+        9JtxqbTYwCxK219c+Da/Xk5Xy1WWZflqzjfeKA7AgfRGc0nRWwdeJjUkJXWDTx5CLZPP0UxDMkN1
+        HPe/0kgY2BVqrxzagAfST9+LL+XXOAmG4d9bmiY+p3ae4/H+WB7f0PBE91KzyxORMjUHN5tl88Xi
+        mujp+rldG9eaw+d6B5piPxA7gMBctfEJBwOecb3p1+AYn08jr+ltBz31EaY3XUfYH7TVKCWmFF2e
+        TeOwlqKOi5vmRw8R59oqyB3F+oxxtSMR+kqqgFuGGtl5oGLQW7KkR0Ux/pYHGtq3G07SWZ4tVn+9
+        VGGwUf3x6VbsXwFDxJyk7QMAAA==
+    headers:
+      allow: ['GET, PUT, PATCH, DELETE, HEAD, OPTIONS']
+      connection: [keep-alive]
+      content-encoding: [gzip]
+      content-length: ['475']
+      content-type: [application/json]
+      date: ['Tue, 11 Nov 2014 17:44:33 GMT']
+      server: [nginx/1.4.7]
+      user-agent: [emites-sandbox-v1]
+      vary: [Accept-Encoding, 'Accept, Cookie']
+      x-frame-options: [SAMEORIGIN]
+    status: {code: 200, message: OK}
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      Accept-Encoding: ['gzip, deflate']
+      Authorization: [Basic REQwMDAyN0Y0QTc2RTRCNzkyMDlBQ0JGQkM3MkY2OEU6]
+      Cache-Control: [no-cache]
+      Connection: [keep-alive]
+      Content-Length: ['0']
+      Content-Type: [application/json]
+      User-Agent: [python-emites]
+    method: OPTIONS
+    uri: https://sandbox.emites.com.br:443/api/v1/emitters/13
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3XLoQqAQAyA4VcZy4LdZjDY7GIY54SJzmNbE9/dO7Ca/++/Uelk7ACHUyLYYFQP
+        0sTYAK7sySSHXFpJP42wXQb8UdEyUIpKjXVl88JmpJwPSVS3dvfyLgVkMue//rzpUl8RiAAAAA==
+    headers:
+      allow: ['GET, PUT, PATCH, DELETE, HEAD, OPTIONS']
+      connection: [keep-alive]
+      content-encoding: [gzip]
+      content-length: ['112']
+      content-type: [application/json]
+      date: ['Tue, 11 Nov 2014 17:44:33 GMT']
+      server: [nginx/1.4.7]
+      user-agent: [emites-sandbox-v1]
+      vary: [Accept-Encoding, 'Accept, Cookie']
+      x-frame-options: [SAMEORIGIN]
+    status: {code: 200, message: OK}
 version: 1

@@ -4,7 +4,8 @@ from vcr import VCR
 
 __all__ = [
     'use_cassette',
-    'APP_CREDENTIALS', 'TEST_EMITTER', 'TEST_SERVICE_VALUE'
+    'APP_CREDENTIALS', 'TEST_EMITTER', 'TEST_SERVICE_VALUE',
+    'TEST_NFSE',
 ]
 
 def use_cassette(*args, **kwargs):
@@ -77,4 +78,24 @@ TEST_SERVICE_VALUE = {
     'name': u'Testes da api do emites',
     'service_amount': '99.99',
     'iss_percentage': '5.00',
+}
+
+TEST_NFSE = {
+    'emitter_id': '',
+    'serie': 'TESTE',
+    'service_values': {
+        'id': '',
+        'service_amount': '99.99',
+        'iss_percentage': '5.00',
+        'iss_amount': '4.99',
+        'deduction_amount': '0.00',
+        'discount_conditioning_amount': '0.00',
+        'calculation_base': '99.99',
+        'nfse_liquid_amount': '99.99',
+        'service_item_code': '0105',
+        'city_tax_code': '010501',
+        'cnae_code': '6201-5',
+        'city_code': 3304557,
+        'description': u'Testes da api do emites',
+    }
 }

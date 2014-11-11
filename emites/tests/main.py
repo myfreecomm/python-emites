@@ -1,17 +1,32 @@
 # -*- coding: utf-8 -*-
 import six
 import unittest
-
+from freezegun import freeze_time
+from datetime import datetime
 import requests
+
 import api_toolkit
 
 from emites.main import Emites
 from .helpers import (
-    use_cassette as use_emites_cassette,
-    APP_CREDENTIALS, TEST_EMITTER, TEST_TAKER, TEST_SERVICE_VALUE
+    use_cassette as use_emites_cassette, APP_CREDENTIALS,
+    TEST_EMITTER, TEST_TAKER, TEST_SERVICE_VALUE, TEST_NFSE
 )
 
-__all__ = ['EmitesTest', 'EmittersTest', 'TakersTest', 'ServiceValuesTest']
+__all__ = [
+    'EmitesTest', 'EmittersTest', 'TakersTest',
+    'ServiceValuesTest', 'NfseTest',
+]
+
+
+class WithFrozenTime(unittest.TestCase):
+
+    def setUp(self):
+        self.freezer = freeze_time("2014-02-19 19:04:00")
+        self.freezer.start()
+
+    def tearDown(self):
+        self.freezer.stop()
 
 
 class EmitesTest(unittest.TestCase):
@@ -415,3 +430,284 @@ class ServiceValuesTest(unittest.TestCase):
             service_values = [item for item in self.api_client.service_values.all()]
 
         self.assertEqual(service_values, [])
+
+
+class NfseTest(WithFrozenTime):
+
+    def setUp(self):
+        super(NfseTest, self).setUp()
+
+        with use_emites_cassette('collections_options'):
+            self.api_client = Emites(**APP_CREDENTIALS)
+
+        with use_emites_cassette('emitters/get_from_this_account'):
+            self.emitter = self.api_client.emitters.get(13)
+
+        with use_emites_cassette('takers/get_from_this_account'):
+            self.taker = self.api_client.takers.get(11)
+
+        with use_emites_cassette('service_values/get_from_this_account'):
+            self.service_values = self.api_client.service_values.get(39)
+
+        self.post_data = TEST_NFSE.copy()
+        self.post_data['emission_date'] = datetime.now().isoformat()
+        self.post_data['emitter_id'] = self.emitter.id
+        self.post_data['taker_id'] = self.taker.id
+        self.post_data['service_values'] = TEST_NFSE['service_values'].copy()
+
+    def test_nfse_are_a_collection(self):
+        self.assertTrue(isinstance(self.api_client.nfse, api_toolkit.Collection))
+
+    def test_nfse_are_iterable(self):
+        with use_emites_cassette('nfse/list'):
+            nfse = [item for item in self.api_client.nfse.all()]
+
+    def test_nfse_can_be_created(self):
+        with use_emites_cassette('nfse/create'):
+            nfse = self.api_client.nfse.create(**self.post_data)
+
+        self.assertEqual(nfse.id, 77)
+        self.assertEqual(nfse.emitter_id, self.emitter.id)
+        self.assertEqual(nfse.serie, self.post_data['serie'])
+
+    def _test_creation_with_emitter_from_another_account_fails(self):
+        self.post_data['emitter_id'] = 2
+        with use_emites_cassette('nfse/create_with_emitter_from_another_account'):
+            self.assertRaises(requests.HTTPError, self.api_client.nfse.create, **self.post_data)
+
+    def _test_creation_with_taker_from_another_account_fails(self):
+        self.post_data['taker_id'] = 2
+        with use_emites_cassette('nfse/create_with_taker_from_another_account'):
+            self.assertRaises(requests.HTTPError, self.api_client.nfse.create, **self.post_data)
+
+    def _test_creation_with_service_values_from_another_account_fails(self):
+        raise NotImplementedError # não está falhando
+        self.post_data['service_values']['id'] = 2
+        with use_emites_cassette('nfse/create_with_service_values_from_another_account'):
+            self.assertRaises(requests.HTTPError, self.api_client.nfse.create, **self.post_data)
+
+    def _test_creation_without_service_values_service_amount_fails(self):
+        del(self.post_data['service_values']['service_amount'])
+        with use_emites_cassette('nfse/create_without_service_amount'):
+            self.assertRaises(requests.HTTPError, self.api_client.nfse.create, **self.post_data)
+
+    def _test_creation_without_service_values_iss_percentage_fails(self):
+        del(self.post_data['service_values']['iss_percentage'])
+        with use_emites_cassette('nfse/create_without_iss_percentage'):
+            self.assertRaises(requests.HTTPError, self.api_client.nfse.create, **self.post_data)
+
+    def _test_creation_without_service_values_iss_amount_fails(self):
+        del(self.post_data['service_values']['iss_amount'])
+        with use_emites_cassette('nfse/create_without_iss_amount'):
+            self.assertRaises(requests.HTTPError, self.api_client.nfse.create, **self.post_data)
+
+    def _test_creation_without_service_values_deduction_amount_fails(self):
+        del(self.post_data['service_values']['deduction_amount'])
+        with use_emites_cassette('nfse/create_without_deduction_amount'):
+            self.assertRaises(requests.HTTPError, self.api_client.nfse.create, **self.post_data)
+
+    def _test_creation_without_service_values_discount_conditioning_amount_fails(self):
+        del(self.post_data['service_values']['discount_conditioning_amount'])
+        with use_emites_cassette('nfse/create_without_discount_conditioning_amount'):
+            self.assertRaises(requests.HTTPError, self.api_client.nfse.create, **self.post_data)
+
+    def _test_creation_without_service_values_calculation_base_fails(self):
+        del(self.post_data['service_values']['calculation_base'])
+        with use_emites_cassette('nfse/create_without_calculation_base'):
+            self.assertRaises(requests.HTTPError, self.api_client.nfse.create, **self.post_data)
+
+    def _test_creation_without_service_values_nfse_liquid_amount_fails(self):
+        del(self.post_data['service_values']['nfse_liquid_amount'])
+        with use_emites_cassette('nfse/create_without_nfse_liquid_amount'):
+            self.assertRaises(requests.HTTPError, self.api_client.nfse.create, **self.post_data)
+
+    def _test_creation_without_service_values_service_item_code_fails(self):
+        del(self.post_data['service_values']['service_item_code'])
+        with use_emites_cassette('nfse/create_without_service_item_code'):
+            self.assertRaises(requests.HTTPError, self.api_client.nfse.create, **self.post_data)
+
+    def _test_creation_without_service_values_city_tax_code_fails(self):
+        del(self.post_data['service_values']['city_tax_code'])
+        with use_emites_cassette('nfse/create_without_city_tax_code'):
+            self.assertRaises(requests.HTTPError, self.api_client.nfse.create, **self.post_data)
+
+    def _test_creation_without_service_values_cnae_code_fails(self):
+        del(self.post_data['service_values']['cnae_code'])
+        with use_emites_cassette('nfse/create_without_cnae_code'):
+            self.assertRaises(requests.HTTPError, self.api_client.nfse.create, **self.post_data)
+
+    def _test_creation_without_service_values_city_code_fails(self):
+        del(self.post_data['service_values']['city_code'])
+        with use_emites_cassette('nfse/create_without_city_code'):
+            self.assertRaises(requests.HTTPError, self.api_client.nfse.create, **self.post_data)
+
+    def _test_creation_without_service_values_description_fails(self):
+        del(self.post_data['service_values']['description'])
+        with use_emites_cassette('nfse/create_without_description'):
+            self.assertRaises(requests.HTTPError, self.api_client.nfse.create, **self.post_data)
+
+    def test_creation_with_taker_information(self):
+        del(self.post_data['taker_id'])
+        self.post_data['taker'] = {
+            'address': {
+                'city': u'Rio de Janeiro',
+                'city_code': 3304557,
+                'complement': u'11º andar',
+                'country': u'Brasil',
+                'country_abbreviation': u'BR',
+                'country_code': u'01058',
+                'neighborhood': u'Centro',
+                'neighborhood_type': u'COM',
+                'number': u'1142',
+                'reference_point': u'Ao lado',
+                'state': u'RJ',
+                'street': u'dos testes',
+                'street_type': u'AVN',
+                'zip_code': u'20011020'
+            },
+            'city_inscription': u'00000000',
+            'cnpj': u'91762868000184',
+            'contact': {
+                'email': u'pagamentos@python-emites.test',
+                'phone': u'21000000000'
+            },
+            'cpf': None,
+            'fancy_name': u'Empresa de Testes',
+            'foreign_taker': False,
+            'social_reason': u'Empresa de Testes Ltda ME',
+            'special_situation': 0,
+            'state_inscription': u'ISENTO',
+            'substitute_state_inscription': None
+        }
+        with use_emites_cassette('nfse/create_with_taker_information'):
+            nfse = self.api_client.nfse.create(**self.post_data)
+
+        self.assertEqual(nfse.id, 80)
+        self.assertEqual(nfse.taker, self.post_data['taker'])
+
+    def test_taker_information_from_response(self):
+        with use_emites_cassette('nfse/create'):
+            nfse = self.api_client.nfse.create(**self.post_data)
+
+        self.assertEqual(nfse.id, 77)
+        expected_taker = {
+            'address': {
+                'city': u'Rio de Janeiro',
+                'city_code': 3304557,
+                'complement': None,
+                'country': u'Brasil',
+                'country_abbreviation': u'BR',
+                'country_code': u'01058',
+                'neighborhood': u'Centro',
+                'neighborhood_type': u'COM',
+                'number': u'42',
+                'reference_point': None,
+                'state': u'RJ',
+                'street': u'dos testes',
+                'street_type': u'RUA',
+                'zip_code': u'20011020'
+            },
+            'city_inscription': u'00000000',
+            'cnpj': u'91762868000184',
+            'contact': {
+                'email': u'financeiro@python-emites.test',
+                'phone': u'21000000000'
+            },
+            'cpf': None,
+            'fancy_name': u'Empresa de Testes',
+            'foreign_taker': False,
+            'social_reason': u'Empresa de Testes Ltda ME',
+            'special_situation': 0,
+            'state_inscription': u'ISENTO',
+            'substitute_state_inscription': None
+        }
+        self.assertEqual(nfse.taker, expected_taker)
+
+    def test_creation_with_merged_service_values_data(self):
+        self.post_data['service_values']['id'] = self.service_values.id
+        del(self.post_data['service_values']['service_amount'])
+        del(self.post_data['service_values']['iss_percentage'])
+        with use_emites_cassette('nfse/create_with_merged_service_values_data'):
+            nfse = self.api_client.nfse.create(**self.post_data)
+
+        self.assertEqual(nfse.id, 81)
+        expected_service_values = {
+            'calculation_base': u'99.99',
+            'city_code': 3304557,
+            'city_tax_code': u'010501',
+            'cnae_code': u'6201-5',
+            'cofins_amount': None,
+            'csll_amount': None,
+            'deduction_amount': u'0.00',
+            'description': u'Testes da api do emites',
+            'discount_conditioning_amount': u'0.00',
+            'inss_amount': None,
+            'ir_amount': None,
+            'iss_amount': u'4.99',
+            'iss_percentage': u'5.00',
+            'nfse_liquid_amount': u'99.99',
+            'other_retentions': None,
+            'pis_amount': None,
+            'retained_iss': False,
+            'retained_iss_amount': None,
+            'service_amount': u'99.99',
+            'service_item_code': u'0105',
+            'unconditioned_discount': None
+        }
+        self.assertEqual(nfse.service_values, expected_service_values)
+
+    def test_service_values_from_response(self):
+        with use_emites_cassette('nfse/create'):
+            nfse = self.api_client.nfse.create(**self.post_data)
+
+        self.assertEqual(nfse.id, 77)
+        expected_service_values = {
+            'calculation_base': u'99.99',
+            'city_code': 3304557,
+            'city_tax_code': u'010501',
+            'cnae_code': u'6201-5',
+            'cofins_amount': None,
+            'csll_amount': None,
+            'deduction_amount': u'0.00',
+            'description': u'Testes da api do emites',
+            'discount_conditioning_amount': u'0.00',
+            'inss_amount': None,
+            'ir_amount': None,
+            'iss_amount': u'4.99',
+            'iss_percentage': u'5.00',
+            'nfse_liquid_amount': u'99.99',
+            'other_retentions': None,
+            'pis_amount': None,
+            'retained_iss': False,
+            'retained_iss_amount': None,
+            'service_amount': u'99.99',
+            'service_item_code': u'0105',
+            'unconditioned_discount': None
+        }
+        self.assertEqual(nfse.service_values, expected_service_values)
+
+    def test_get_nfse_from_another_account_fails(self):
+        with use_emites_cassette('nfse/get_from_another_account'):
+            self.assertRaises(requests.HTTPError, self.api_client.nfse.get, 2)
+
+    def test_get_nfse_from_this_account_works(self):
+        with use_emites_cassette('nfse/get_from_this_account'):
+            nfse = self.api_client.nfse.get(77)
+
+        self.assertEqual(nfse.emitter_id, self.post_data['emitter_id'])
+        self.assertEqual(nfse.id, 77)
+
+    def test_nfse_cannot_be_updated(self):
+        with use_emites_cassette('nfse/get_from_this_account'):
+            nfse = self.api_client.nfse.get(77)
+
+        nfse.service_values['iss_percentage'] = '0.3'
+        nfse.service_values['description'] = u'Teste da api de alteração de dados de valores de serviço'
+        self.assertRaises(ValueError, nfse.save)
+
+    def test_nfse_cannot_be_deleted(self):
+        with use_emites_cassette('nfse/get_from_this_account'):
+            nfse = self.api_client.nfse.get(77)
+
+        with use_emites_cassette('nfse/delete'):
+            self.assertRaises(requests.HTTPError, nfse.delete)
