@@ -4,8 +4,8 @@ from vcr import VCR
 
 __all__ = [
     'use_cassette',
-    'APP_CREDENTIALS', 'TEST_EMITTER', 'TEST_SERVICE_VALUE',
-    'TEST_NFSE',
+    'APP_CREDENTIALS', 'TEST_EMITTER',
+    'TEST_SERVICE_VALUE', 'TEST_NFSE'
 ]
 
 def use_cassette(*args, **kwargs):

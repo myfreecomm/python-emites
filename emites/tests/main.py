@@ -15,7 +15,7 @@ from .helpers import (
 
 __all__ = [
     'EmitesTest', 'EmittersTest', 'TakersTest',
-    'ServiceValuesTest', 'NfseTest',
+    'ServiceValuesTest', 'NfseTest', 'BatchesTest'
 ]
 
 
@@ -711,3 +711,173 @@ class NfseTest(WithFrozenTime):
 
         with use_emites_cassette('nfse/delete'):
             self.assertRaises(requests.HTTPError, nfse.delete)
+
+    def test_nfse_can_be_created_inside_a_batch(self):
+        with use_emites_cassette('batches/get_from_this_account'):
+            batch = self.api_client.batches.get(24)
+
+        self.post_data = TEST_NFSE.copy()
+        self.post_data['emission_date'] = datetime.now().isoformat()
+        self.post_data['emitter_id'] = self.emitter.id
+        self.post_data['taker_id'] = self.taker.id
+        self.post_data['batch_id'] = batch.id
+        self.post_data['service_values'] = TEST_NFSE['service_values'].copy()
+
+        with use_emites_cassette('nfse/create_in_a_batch'):
+            nfse = self.api_client.nfse.create(**self.post_data)
+
+        self.assertEqual(nfse.id, 86)
+        self.assertEqual(nfse.emitter_id, self.emitter.id)
+        self.assertEqual(nfse.serie, self.post_data['serie'])
+
+    def test_nfse_can_be_deleted_from_a_pending_batch(self):
+        with use_emites_cassette('batches/get_from_this_account'):
+            batch = self.api_client.batches.get(24)
+
+        self.post_data = TEST_NFSE.copy()
+        self.post_data['emission_date'] = datetime.now().isoformat()
+        self.post_data['emitter_id'] = self.emitter.id
+        self.post_data['taker_id'] = self.taker.id
+        self.post_data['batch_id'] = batch.id
+        self.post_data['service_values'] = TEST_NFSE['service_values'].copy()
+        self.post_data['service_values']['iss_percentage'] = '0.01'
+
+        with use_emites_cassette('nfse/create_in_a_batch'):
+            nfse = self.api_client.nfse.create(**self.post_data)
+        self.assertEqual(nfse.id, 87)
+
+        with use_emites_cassette('nfse/delete_in_a_batch'):
+            nfse.load_options()
+            nfse.delete()
+
+        with use_emites_cassette('nfse/get_removed_nfse'):
+            self.assertRaises(requests.HTTPError, self.api_client.nfse.get, 87)
+
+
+class BatchesTest(WithFrozenTime):
+
+    def setUp(self):
+        super(BatchesTest, self).setUp()
+        with use_emites_cassette('collections_options'):
+            self.api_client = Emites(**APP_CREDENTIALS)
+
+        with use_emites_cassette('emitters/get_from_this_account'):
+            self.emitter = self.api_client.emitters.get(13)
+
+        self.post_data = {
+            'emitter_id': self.emitter.id,
+            'name': u'Lote de teste da API'
+        }
+
+    def test_batches_are_a_collection(self):
+        self.assertTrue(isinstance(self.api_client.batches, api_toolkit.Collection))
+
+    def test_batches_are_iterable(self):
+        with use_emites_cassette('batches/list'):
+            batches = [item for item in self.api_client.batches.all()]
+
+    def test_batches_can_be_created(self):
+        with use_emites_cassette('batches/create'):
+            batch = self.api_client.batches.create(**self.post_data)
+
+        self.assertEqual(batch.id, 24)
+        self.assertEqual(batch.emitter_id, self.emitter.id)
+        self.assertEqual(batch.name, self.post_data['name'])
+
+    def test_batches_can_be_filtered_by_status(self):
+        with use_emites_cassette('batches/filter_by_status'):
+            batches = list(self.api_client.batches.all(status='created'))
+
+        self.assertEqual(len(batches), 1)
+        self.assertEqual(batches[0].id, 24)
+
+    def test_batches_can_be_filtered_by_emitter(self):
+        with use_emites_cassette('batches/filter_by_emitter'):
+            batches = list(self.api_client.batches.all(emitter_id=self.emitter.id))
+
+        self.assertEqual(len(batches), 1)
+        self.assertEqual(batches[0].id, 24)
+
+    def test_batches_from_other_emitters_cannot_be_seen(self):
+        with use_emites_cassette('batches/filter_by_other_emitter'):
+            batches = list(self.api_client.batches.all(emitter_id=11))
+
+        self.assertEqual(len(batches), 0)
+
+    def test_batches_can_be_filtered_by_name(self):
+        with use_emites_cassette('batches/filter_by_name'):
+            batches = list(self.api_client.batches.all(name=self.post_data['name']))
+
+        self.assertEqual(len(batches), 1)
+        self.assertEqual(batches[0].id, 24)
+
+    def test_creation_without_name_fails(self):
+        del(self.post_data['name'])
+        with use_emites_cassette('batches/create_without_name'):
+            self.assertRaises(requests.HTTPError, self.api_client.batches.create, **self.post_data)
+
+    def test_creation_without_emitter_id_fails(self):
+        del(self.post_data['emitter_id'])
+        with use_emites_cassette('batches/create_without_emitter_id'):
+            self.assertRaises(requests.HTTPError, self.api_client.batches.create, **self.post_data)
+
+    def test_get_batch_from_another_account_fails(self):
+        with use_emites_cassette('batches/get_from_another_account'):
+            self.assertRaises(requests.HTTPError, self.api_client.batches.get, 11)
+
+    def test_get_batch_from_this_account_works(self):
+        with use_emites_cassette('batches/get_from_this_account'):
+            batch = self.api_client.batches.get(24)
+
+        self.assertEqual(batch.emitter_id, self.post_data['emitter_id'])
+        self.assertEqual(batch.id, 24)
+
+    def test_batches_cannot_be_updated(self):
+        with use_emites_cassette('batches/get_from_this_account'):
+            batch = self.api_client.batches.get(24)
+
+        self.assertRaises(ValueError, batch.save)
+
+    def test_batches_cannot_be_deleted(self):
+        with use_emites_cassette('batches/get_from_this_account'):
+            batch = self.api_client.batches.get(24)
+
+        self.assertRaises(ValueError, batch.delete)
+
+    def test_batch_nfses_are_a_collection(self):
+        with use_emites_cassette('batches/get_from_this_account'):
+            batch = self.api_client.batches.get(24)
+
+        self.assertTrue(isinstance(batch.nfse, api_toolkit.Collection))
+
+    def test_batch_nfses_are_iterable(self):
+        with use_emites_cassette('batches/get_from_this_account'):
+            batch = self.api_client.batches.get(24)
+
+        with use_emites_cassette('batches/nfse/list'):
+            nfses = [item for item in batch.nfse.all()]
+
+    def test_batches_have_a_history(self):
+        with use_emites_cassette('batches/get_from_this_account'):
+            batch = self.api_client.batches.get(24)
+
+        with use_emites_cassette('batches/history'):
+            events = [item for item in batch.history.all()]
+
+        self.assertEqual(len(events), 1)
+        expected_event = {
+            'account': {'id': 56, 'name': u'python-emites'},
+            'batch': {'id': 24, 'name': u'Lote de teste da API'},
+            'date': u'2014-11-11T20:17:36.441Z',
+            'emitter': {'id': 13, 'social_reason': u'Empresa de Testes Ltda ME'},
+            'from_status': None,
+            'id': 299,
+            'to_status': u'created',
+            'token': u'DD00027F4A76E4B79209ACBFBC72F68E'
+        }
+        self.assertEqual(events[0].resource_data, expected_event)
+
+    # TODO:
+    # - batch.send
+    # - batch.cancel
+    # - constants

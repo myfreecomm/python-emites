@@ -55,21 +55,22 @@ class EmitesResource(Resource):
             self._meta['links'] = self._links
 
     def prepare_collections(self):
-        for item in self._meta['links']:
-            link_url = item['url']
-            if link_url == self.url:
-                continue
-            link_name = item['rel']
-            link_collection = Collection(
-                link_url, session=self._session
-            )
+        if hasattr(self, '_links'):
+            for item in self._links:
+                link_url = item['href']
+                if link_url == self.url:
+                    continue
+                link_name = item['rel']
+                link_collection = EmitesCollection(
+                    link_url, session=self._session
+                )
 
-            setattr(self, link_name, link_collection)
+                setattr(self, link_name, link_collection)
 
     @classmethod
     def load(cls, url, **kwargs):
         instance = super(EmitesResource, cls).load(url, **kwargs)
-        instance.load_options()
+        instance.prepare_collections()
         return instance
 
 
@@ -99,6 +100,7 @@ class EmitesCollection(Collection):
             for item in content.get('collection', []):
                 instance = self.resource_class(**item)
                 instance._session = self._session
+                instance.prepare_collections()
                 if load_options:
                     instance.load_options()
                 yield instance

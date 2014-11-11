@@ -11,7 +11,7 @@ interactions:
       Content-Type: [application/json]
       User-Agent: [python-emites]
     method: GET
-    uri: https://sandbox.emites.com.br:443/api/v1/batches
+    uri: https://sandbox.emites.com.br:443/api/v1/batches?status=created
   response:
     body:
       string: !!binary |
@@ -27,7 +27,7 @@ interactions:
       content-encoding: [gzip]
       content-length: ['316']
       content-type: [application/json]
-      date: ['Tue, 11 Nov 2014 20:18:38 GMT']
+      date: ['Tue, 11 Nov 2014 20:45:27 GMT']
       server: [nginx/1.4.7]
       user-agent: [emites-sandbox-v1]
       vary: [Accept-Encoding, 'Accept, Cookie']
