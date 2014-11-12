@@ -46,26 +46,28 @@ class EmitesResource(Resource):
         self.resource_data[self.url_attribute_name] = value
 
     def parse_links(self):
-        if hasattr(self, '_links'):
-            # Find the resource's url
-            for item in self._links:
-                if item['rel'] == 'self':
-                    self.url = item['href']
+        links = getattr(self, '_links', [])
+        self._meta['links'] = dict((item['rel'], item) for item in links)
 
-            self._meta['links'] = self._links
+        # Find the resource's url
+        for item in links:
+            if item['rel'] == 'self':
+                self.url = item['href']
 
     def prepare_collections(self):
-        if hasattr(self, '_links'):
-            for item in self._links:
-                link_url = item['href']
-                if link_url == self.url:
-                    continue
-                link_name = item['rel']
-                link_collection = EmitesCollection(
-                    link_url, session=self._session
-                )
+        self.parse_links()
+        links = getattr(self, '_links', [])
+        for item in links:
+            link_url = item['href']
+            link_name = item['rel']
 
-                setattr(self, link_name, link_collection)
+            if (link_url == self.url) or hasattr(self, link_name):
+                continue
+
+            link_collection = EmitesCollection(
+                link_url, session=self._session, resource_class=self.__class__
+            )
+            setattr(self, link_name, link_collection)
 
     @classmethod
     def load(cls, url, **kwargs):
@@ -110,33 +112,52 @@ class EmitesCollection(Collection):
                 break
 
 
+class Nfse(EmitesResource):
+
+    def cancel(self):
+        cancel_link = self._meta['links'].get('cancel', None)
+        if not cancel_link:
+            raise ValueError('The url for this operation is not set')
+
+        link_collection = EmitesCollection(
+            cancel_link['href'], session=self._session, resource_class=self.__class__
+        )
+        return link_collection.create()
+
+    def status(self):
+        raise NotImplementedError
+
+    def mirror(self):
+        raise NotImplementedError
+
+    def xml(self):
+        raise NotImplementedError
+
+    def pdf(self):
+        raise NotImplementedError
+
+
 class Batch(EmitesResource):
 
     def cancel(self):
-        return self._cancel.create()
+        cancel_link = self._meta['links'].get('cancel', None)
+        if not cancel_link:
+            raise ValueError('The url for this operation is not set')
+
+        link_collection = EmitesCollection(
+            cancel_link['href'], session=self._session, resource_class=self.__class__
+        )
+        return link_collection.create()
 
     def send(self):
-        return self._send.create()
+        send_link = self._meta['links'].get('send', None)
+        if not send_link:
+            raise ValueError('The url for this operation is not set')
 
-    def prepare_collections(self):
-        if hasattr(self, '_links'):
-            for item in self._links:
-                link_url = item['href']
-                if link_url == self.url:
-                    continue
-                link_name = item['rel']
-
-                if link_name in ('send', 'cancel'):
-                    link_name = '_{0}'.format(link_name)
-                    resource_class = Batch
-                else:
-                    resource_class = EmitesResource
-
-                link_collection = EmitesCollection(
-                    link_url, session=self._session, resource_class=resource_class
-                )
-
-                setattr(self, link_name, link_collection)
+        link_collection = EmitesCollection(
+            send_link['href'], session=self._session, resource_class=self.__class__
+        )
+        return link_collection.create()
 
 
 class Emites(EmitesResource):
@@ -168,7 +189,7 @@ class Emites(EmitesResource):
 
         self.nfse = EmitesCollection(
             url='{0}/api/v1/nfse'.format(self.host),
-            token=self.token, resource_class=EmitesResource
+            token=self.token, resource_class=Nfse
         )
         self.nfse.load_options()
 
