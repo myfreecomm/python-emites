@@ -26,7 +26,7 @@ class Tox(TestCommand):
         sys.exit(errno)
 
 setuptools.setup(
-    name="python-emites-web",
+    name="python-emites",
     version="0.0.1",
     packages=["emites_api"],
     include_package_data=True,  # declarations in MANIFEST.in
