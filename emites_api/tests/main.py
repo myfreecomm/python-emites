@@ -20,7 +20,7 @@ TODO:
 
 __all__ = [
     'EmitesTest', 'EmittersTest', 'TakersTest',
-    'ServiceValuesTest', 'NfseTest', 'BatchesTest'
+    'ServiceValuesTest', 'NfseTest', 'NfseConstantsTest', 'BatchesTest'
 ]
 
 
@@ -846,6 +846,140 @@ class NfseTest(WithFrozenTime):
 
         with use_emites_cassette('nfse/has_no_pdf_when_scheduled'):
             self.assertRaises(requests.HTTPError, nfse.pdf)
+
+    def test_nfse_has_constants(self):
+        with use_emites_cassette('nfse/constants'):
+            constants = self.api_client.nfse.constants
+
+        self.assertEqual(sorted(constants.keys()), sorted([
+            'neighborhood_type',
+            'operation_nature',
+            'rps_situation',
+            'rps_type',
+            'special_regime',
+            'status',
+            'street_type',
+            'taker_special_situation',
+        ]))
+
+
+class NfseConstantsTest(unittest.TestCase):
+
+    def setUp(self):
+        with use_emites_cassette('collections_options'):
+            self.api_client = Emites(**APP_CREDENTIALS)
+
+    def test_neighborhood_types(self):
+        with use_emites_cassette('nfse/constants'):
+            constants = self.api_client.nfse.constants
+
+        self.assertEqual(constants['neighborhood_type'], {
+            'COM': u'Comercial', 'IND': u'Industrial', 'RED': u'Residencial'
+        })
+
+    def test_operation_nature(self):
+        with use_emites_cassette('nfse/constants'):
+            constants = self.api_client.nfse.constants
+
+        self.assertEqual(constants['operation_nature'], {
+            '1': u'Tributação no munic\xedpio',
+            '2': u'Tributação fora do munic\xedpio',
+            '3': u'Isenção',
+            '4': u'Imune',
+            '5': u'Exigibilidade suspensa por decisão judicial',
+            '6': u'Exigibilidade suspensa por procedimento Administrativo'
+        })
+
+    def test_rps_situation(self):
+        with use_emites_cassette('nfse/constants'):
+            constants = self.api_client.nfse.constants
+
+        self.assertEqual(constants['rps_situation'], {
+            '1': u'Normal', '2': u'Cancelado', '3': u'Extraviada'
+        })
+
+    def test_rps_type(self):
+        with use_emites_cassette('nfse/constants'):
+            constants = self.api_client.nfse.constants
+
+        self.assertEqual(constants['rps_type'], {
+            '1': u'RPS', '2': u'Nota Fisca Conjugada', '3': u'Cupom Tipo Padrão'
+        })
+
+    def test_special_regime(self):
+        with use_emites_cassette('nfse/constants'):
+            constants = self.api_client.nfse.constants
+
+        self.assertEqual(constants['special_regime'], {
+            '1': u'Microempresa Municipal',
+            '2': u'Estimativa',
+            '3': u'Sociedade de Profissionais',
+            '4': u'Cooperativa',
+            '5': u'MEI - Microempresário Individual',
+            '6': u'ME EPP - Simples Nacional'
+        })
+
+    def test_status(self):
+        with use_emites_cassette('nfse/constants'):
+            constants = self.api_client.nfse.constants
+
+        self.assertEqual(constants['status'], {
+            'accepted': u'Processado pela Sefaz',
+            'cancelled': u'Cancelado pela Sefaz',
+            'processing': u'Processando NFSe junto a Sefaz',
+            'rejected': u'Rejeitado pela Sefaz',
+            'scheduled': u'Agendado o processamento da NFSe'
+        })
+
+    def test_street_type(self):
+        with use_emites_cassette('nfse/constants'):
+            constants = self.api_client.nfse.constants
+
+        self.assertEqual(constants['street_type'], {
+            'ALM': u'Alameda',
+            'AVN': u'Avenida',
+            'BEC': u'Beco',
+            'BLV': u'Boulevard',
+            'CAM': u'Caminho',
+            'CAS': u'Cais',
+            'CMP': u'Campo',
+            'ESC': u'Escada',
+            'ETR': u'Estrada',
+            'FAV': u'Favela',
+            'FAZ': u'Fazendo',
+            'FLT': u'Floresta',
+            'ILH': u'Ilha',
+            'JRD': u'Jardim',
+            'LAD': u'Ladeira',
+            'LRG': u'Largo',
+            'LTM': u'Loteamento',
+            'LUG': u'Lugar',
+            'MRR': u'Morro',
+            'PAS': u'Passeio',
+            'PQE': u'Parque',
+            'PRA': u'Praia',
+            'PRC': u'Praça',
+            'REC': u'Recanto',
+            'ROD': u'Rodovia',
+            'RUA': u'Rua',
+            'SRV': u'Servidão',
+            'TRV': u'Travessa',
+            'VIA': u'Via',
+            'VIL': u'Vila'
+        })
+
+    def test_taker_special_situation(self):
+        with use_emites_cassette('nfse/constants'):
+            constants = self.api_client.nfse.constants
+
+        self.assertEqual(constants['taker_special_situation'], {
+            '0': u'Outros',
+            '1': u'SUS',
+            '2': u'Órgão do Poder Executivo',
+            '3': u'Bancos',
+            '4': u'Coméricio/Industria',
+            '5': u'Poder Legislativo/Judiciário'
+        })
 
 
 class BatchesTest(WithFrozenTime):

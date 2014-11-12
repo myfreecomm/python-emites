@@ -154,6 +154,18 @@ class Batch(EmitesResource):
         return self._collection_from_link('send').create()
 
 
+class NfseCollection(EmitesCollection):
+    resource_class = Nfse
+    _constants = {}
+
+    @property
+    def constants(self):
+        if not self._constants:
+            constants_url = '{0}/constants'.format(self.url)
+            self._constants = Resource.load(constants_url, session=self._session).resource_data
+        return self._constants
+
+
 class Emites(EmitesResource):
 
     def __init__(self, host, token):
@@ -181,9 +193,9 @@ class Emites(EmitesResource):
         )
         self.service_values.load_options()
 
-        self.nfse = EmitesCollection(
+        self.nfse = NfseCollection(
             url='{0}/api/v1/nfse'.format(self.host),
-            token=self.token, resource_class=Nfse
+            token=self.token
         )
         self.nfse.load_options()
 
@@ -192,9 +204,3 @@ class Emites(EmitesResource):
             token=self.token, resource_class=Batch
         )
         self.batches.load_options()
-
-        self.nfse_constants = EmitesCollection(
-            url='{0}/api/v1/nfse/constants'.format(self.host),
-            token=self.token, resource_class=EmitesResource
-        )
-        self.nfse_constants.load_options()
