@@ -8,6 +8,13 @@ Sobre o Emites
 O Emites é uma aplicação para emissão de notas fiscais eletrônicas de serviço sob demanda.
 Esta biblioteca implementa um cliente para a `versão 1 de sua API <http://myfreecomm.github.io/emites/v1/index.html>`_
 
+Instalação
+----------
+
+.. code-block:: sh
+
+    pip install python-emites
+
 
 Exemplo de utilização
 ---------------------
