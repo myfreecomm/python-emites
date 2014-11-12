@@ -486,7 +486,6 @@ class NfseTest(WithFrozenTime):
             self.assertRaises(requests.HTTPError, self.api_client.nfse.create, **self.post_data)
 
     def _test_creation_with_service_values_from_another_account_fails(self):
-        raise NotImplementedError # não está falhando
         self.post_data['service_values']['id'] = 2
         with use_emites_cassette('nfse/create_with_service_values_from_another_account'):
             self.assertRaises(requests.HTTPError, self.api_client.nfse.create, **self.post_data)
