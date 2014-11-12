@@ -28,12 +28,12 @@ class Tox(TestCommand):
 setuptools.setup(
     name="python-emites-web",
     version="0.0.1",
-    packages=["emites"],
+    packages=["emites_api"],
     include_package_data=True,  # declarations in MANIFEST.in
     install_requires=open(join(dirname(__file__), 'requirements.txt')).readlines(),
     tests_require=['tox>=1.6.1', 'virtualenv>=1.11.2'],
     cmdclass = {'test': Tox},
-    test_suite='emites.tests',
+    test_suite='emites_api.tests',
     author="vitormazzi",
     author_email="vitormazzi@gmail.com",
     url="http://github.com/myfreecomm/emites",
