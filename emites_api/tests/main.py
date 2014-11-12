@@ -7,7 +7,7 @@ import requests
 
 import api_toolkit
 
-from emites_api.main import Emites, Batch
+from emites_api.main import Emites, Nfse, Batch
 from .helpers import (
     use_cassette as use_emites_cassette, APP_CREDENTIALS,
     TEST_EMITTER, TEST_TAKER, TEST_SERVICE_VALUE, TEST_NFSE
@@ -758,6 +758,95 @@ class NfseTest(WithFrozenTime):
         with use_emites_cassette('nfse/get_removed_nfse'):
             self.assertRaises(requests.HTTPError, self.api_client.nfse.get, 87)
 
+    def test_nfses_have_its_own_class(self):
+        with use_emites_cassette('nfse/get_from_this_account'):
+            nfse = self.api_client.nfse.get(77)
+
+        self.assertTrue(isinstance(nfse, Nfse))
+
+    def test_nfses_have_a_history(self):
+        with use_emites_cassette('nfse/get_from_this_account'):
+            nfse = self.api_client.nfse.get(77)
+
+        with use_emites_cassette('nfse/history'):
+            events = [item for item in nfse.history.all()]
+
+        self.assertEqual(len(events), 2)
+        first_event = {
+            'account': {'id': 56, 'name': u'python-emites'},
+            'date': u'2014-11-11T18:35:23.621Z',
+            'rps': {'id': 77, 'number': 2094379153},
+            'emitter': {'id': 13, 'social_reason': u'Empresa de Testes Ltda ME'},
+            'from_status': None,
+            'id': 289,
+            'to_status': u'created',
+            'token': u'DD00027F4A76E4B79209ACBFBC72F68E'
+        }
+        self.assertEqual(events[0].resource_data, first_event)
+
+        second_event = {
+            'account': {'id': 56, 'name': u'python-emites'},
+            'date': u'2014-11-11T18:35:23.680Z',
+            'rps': {'id': 77, 'number': 2094379153},
+            'emitter': {'id': 13, 'social_reason': u'Empresa de Testes Ltda ME'},
+            'from_status': u'created',
+            'id': 290,
+            'to_status': u'scheduled',
+            'token': u'DD00027F4A76E4B79209ACBFBC72F68E'
+        }
+        self.assertEqual(events[1].resource_data, second_event)
+
+    def test_nfses_have_a_status(self):
+        with use_emites_cassette('nfse/get_from_this_account'):
+            nfse = self.api_client.nfse.get(77)
+
+        with use_emites_cassette('nfse/status'):
+            nfse_status = nfse.status()
+
+        self.assertTrue(isinstance(nfse_status, api_toolkit.entities.Resource))
+        expected_status = {
+            'description': u'Agendado o processamento da NFSe',
+            'environment': u'sandbox',
+            'id': 77,
+            'mirror_url': None,
+            'nfse_errors': [],
+            'nfse_key': None,
+            'nfse_number': None,
+            'number': 2094379153,
+            'pdf_url': None,
+            'status': u'scheduled',
+            'xml_url': None
+        }
+        self.assertEqual(nfse_status.resource_data, expected_status)
+
+    def test_scheduled_nfses_cannot_be_cancelled(self):
+        with use_emites_cassette('nfse/get_from_this_account'):
+            nfse = self.api_client.nfse.get(77)
+
+        with use_emites_cassette('nfse/cancel_scheduled'):
+            self.assertRaises(requests.HTTPError, nfse.cancel)
+
+    def test_scheduled_nfses_have_no_mirror(self):
+        with use_emites_cassette('nfse/get_from_this_account'):
+            nfse = self.api_client.nfse.get(77)
+
+        with use_emites_cassette('nfse/has_no_mirror_when_scheduled'):
+            self.assertRaises(requests.HTTPError, nfse.mirror)
+
+    def test_scheduled_nfses_have_no_xml(self):
+        with use_emites_cassette('nfse/get_from_this_account'):
+            nfse = self.api_client.nfse.get(77)
+
+        with use_emites_cassette('nfse/has_no_xml_when_scheduled'):
+            self.assertRaises(requests.HTTPError, nfse.xml)
+
+    def test_scheduled_nfses_have_no_pdf(self):
+        with use_emites_cassette('nfse/get_from_this_account'):
+            nfse = self.api_client.nfse.get(77)
+
+        with use_emites_cassette('nfse/has_no_pdf_when_scheduled'):
+            self.assertRaises(requests.HTTPError, nfse.pdf)
+
 
 class BatchesTest(WithFrozenTime):
 
@@ -869,6 +958,12 @@ class BatchesTest(WithFrozenTime):
         with use_emites_cassette('batches/nfse/list'):
             nfses = [item for item in batch.nfse.all()]
 
+    def test_batches_have_its_own_class(self):
+        with use_emites_cassette('batches/get_from_this_account'):
+            batch = self.api_client.batches.get(24)
+
+        self.assertTrue(isinstance(batch, Batch))
+
     def test_batches_have_a_history(self):
         with use_emites_cassette('batches/get_from_this_account'):
             batch = self.api_client.batches.get(24)
@@ -889,12 +984,6 @@ class BatchesTest(WithFrozenTime):
         }
         self.assertEqual(events[0].resource_data, expected_event)
 
-    def test_batches_have_its_own_class(self):
-        with use_emites_cassette('batches/get_from_this_account'):
-            batch = self.api_client.batches.get(24)
-
-        self.assertTrue(isinstance(batch, Batch))
-
     def test_batches_can_be_sent(self):
         with use_emites_cassette('batches/get_from_this_account'):
             batch = self.api_client.batches.get(24)
@@ -903,6 +992,7 @@ class BatchesTest(WithFrozenTime):
         with use_emites_cassette('batches/send'):
             sent_batch = batch.send()
         self.assertEqual(sent_batch.status, 'scheduled')
+        self.assertTrue(isinstance(sent_batch, Batch))
 
     def test_empty_batches_cannot_be_sent(self):
         empty_batch = self._create_empty_batch()

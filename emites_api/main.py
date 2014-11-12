@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from functools import partial
 from six.moves.urllib.parse import urlsplit
 from api_toolkit.entities import Collection, Resource, SessionFactory
 
@@ -37,6 +38,22 @@ class EmitesResource(Resource):
         super(EmitesResource, self).__init__(**kwargs)
         self.parse_links()
 
+    def _load_resource_from_link(self, link_name):
+        action_link = self._meta['links'].get(link_name, None)
+        if not action_link:
+            raise ValueError('The url for this operation is not set')
+
+        return Resource.load(action_link['href'], session=self._session)
+
+    def _collection_from_link(self, link_name):
+        action_link = self._meta['links'].get(link_name, None)
+        if not action_link:
+            raise ValueError('The url for this operation is not set')
+
+        return EmitesCollection(
+            action_link['href'], session=self._session, resource_class=self.__class__
+        )
+
     @property
     def url(self):
         return self.resource_data.get(self.url_attribute_name)
@@ -64,9 +81,7 @@ class EmitesResource(Resource):
             if (link_url == self.url) or hasattr(self, link_name):
                 continue
 
-            link_collection = EmitesCollection(
-                link_url, session=self._session, resource_class=self.__class__
-            )
+            link_collection = self._collection_from_link(link_name)
             setattr(self, link_name, link_collection)
 
     @classmethod
@@ -115,49 +130,28 @@ class EmitesCollection(Collection):
 class Nfse(EmitesResource):
 
     def cancel(self):
-        cancel_link = self._meta['links'].get('cancel', None)
-        if not cancel_link:
-            raise ValueError('The url for this operation is not set')
-
-        link_collection = EmitesCollection(
-            cancel_link['href'], session=self._session, resource_class=self.__class__
-        )
-        return link_collection.create()
+        return self._collection_from_link('cancel').create()
 
     def status(self):
-        raise NotImplementedError
+        return self._load_resource_from_link('status')
 
     def mirror(self):
-        raise NotImplementedError
+        return self._load_resource_from_link('mirror')
 
     def xml(self):
-        raise NotImplementedError
+        return self._load_resource_from_link('xml')
 
     def pdf(self):
-        raise NotImplementedError
+        return self._load_resource_from_link('pdf')
 
 
 class Batch(EmitesResource):
 
     def cancel(self):
-        cancel_link = self._meta['links'].get('cancel', None)
-        if not cancel_link:
-            raise ValueError('The url for this operation is not set')
-
-        link_collection = EmitesCollection(
-            cancel_link['href'], session=self._session, resource_class=self.__class__
-        )
-        return link_collection.create()
+        return self._collection_from_link('cancel').create()
 
     def send(self):
-        send_link = self._meta['links'].get('send', None)
-        if not send_link:
-            raise ValueError('The url for this operation is not set')
-
-        link_collection = EmitesCollection(
-            send_link['href'], session=self._session, resource_class=self.__class__
-        )
-        return link_collection.create()
+        return self._collection_from_link('send').create()
 
 
 class Emites(EmitesResource):
