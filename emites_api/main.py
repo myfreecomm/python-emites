@@ -110,6 +110,35 @@ class EmitesCollection(Collection):
                 break
 
 
+class Batch(EmitesResource):
+
+    def cancel(self):
+        return self._cancel.create()
+
+    def send(self):
+        return self._send.create()
+
+    def prepare_collections(self):
+        if hasattr(self, '_links'):
+            for item in self._links:
+                link_url = item['href']
+                if link_url == self.url:
+                    continue
+                link_name = item['rel']
+
+                if link_name in ('send', 'cancel'):
+                    link_name = '_{0}'.format(link_name)
+                    resource_class = Batch
+                else:
+                    resource_class = EmitesResource
+
+                link_collection = EmitesCollection(
+                    link_url, session=self._session, resource_class=resource_class
+                )
+
+                setattr(self, link_name, link_collection)
+
+
 class Emites(EmitesResource):
 
     def __init__(self, host, token):
@@ -145,6 +174,12 @@ class Emites(EmitesResource):
 
         self.batches = EmitesCollection(
             url='{0}/api/v1/batches'.format(self.host),
-            token=self.token, resource_class=EmitesResource
+            token=self.token, resource_class=Batch
         )
         self.batches.load_options()
+
+        self.nfse_constants = EmitesCollection(
+            url='{0}/api/v1/nfse/constants'.format(self.host),
+            token=self.token, resource_class=EmitesResource
+        )
+        self.nfse_constants.load_options()

@@ -7,11 +7,16 @@ import requests
 
 import api_toolkit
 
-from emites.main import Emites
+from emites_api.main import Emites, Batch
 from .helpers import (
     use_cassette as use_emites_cassette, APP_CREDENTIALS,
     TEST_EMITTER, TEST_TAKER, TEST_SERVICE_VALUE, TEST_NFSE
 )
+
+"""
+TODO:
+- nfse_constants
+"""
 
 __all__ = [
     'EmitesTest', 'EmittersTest', 'TakersTest',
@@ -769,6 +774,13 @@ class BatchesTest(WithFrozenTime):
             'name': u'Lote de teste da API'
         }
 
+    def _create_empty_batch(self):
+        self.post_data['name'] = u'{0} (vazio)'.format(self.post_data['name'])
+        with use_emites_cassette('batches/create_empty_batch'):
+            empty_batch = self.api_client.batches.create(**self.post_data)
+
+        return empty_batch
+
     def test_batches_are_a_collection(self):
         self.assertTrue(isinstance(self.api_client.batches, api_toolkit.Collection))
 
@@ -877,7 +889,43 @@ class BatchesTest(WithFrozenTime):
         }
         self.assertEqual(events[0].resource_data, expected_event)
 
-    # TODO:
-    # - batch.send
-    # - batch.cancel
-    # - constants
+    def test_batches_have_its_own_class(self):
+        with use_emites_cassette('batches/get_from_this_account'):
+            batch = self.api_client.batches.get(24)
+
+        self.assertTrue(isinstance(batch, Batch))
+
+    def test_batches_can_be_sent(self):
+        with use_emites_cassette('batches/get_from_this_account'):
+            batch = self.api_client.batches.get(24)
+        self.assertEqual(batch.status, 'created')
+
+        with use_emites_cassette('batches/send'):
+            sent_batch = batch.send()
+        self.assertEqual(sent_batch.status, 'scheduled')
+
+    def test_empty_batches_cannot_be_sent(self):
+        empty_batch = self._create_empty_batch()
+        self.assertEqual(empty_batch.status, 'created')
+
+        with use_emites_cassette('batches/send_empty_batch'):
+            self.assertRaises(requests.HTTPError, empty_batch.send)
+
+    def test_sent_batches_cannot_be_cancelled(self):
+        with use_emites_cassette('batches/get_from_this_account'):
+            batch = self.api_client.batches.get(24)
+        self.assertEqual(batch.status, 'created')
+
+        with use_emites_cassette('batches/send'):
+            sent_batch = batch.send()
+        self.assertEqual(sent_batch.status, 'scheduled')
+
+        with use_emites_cassette('batches/cancel_sent_batch'):
+            self.assertRaises(requests.HTTPError, sent_batch.cancel)
+
+    def test_empty_batches_cannot_be_cancelled(self):
+        empty_batch = self._create_empty_batch()
+        self.assertEqual(empty_batch.status, 'created')
+
+        with use_emites_cassette('batches/cancel_empty_batch'):
+            self.assertRaises(requests.HTTPError, empty_batch.cancel)
