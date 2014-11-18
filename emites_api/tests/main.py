@@ -13,11 +13,6 @@ from .helpers import (
     TEST_EMITTER, TEST_TAKER, TEST_SERVICE_VALUE, TEST_NFSE
 )
 
-"""
-TODO:
-- nfse_constants
-"""
-
 __all__ = [
     'EmitesTest', 'EmittersTest', 'TakersTest',
     'ServiceValuesTest', 'NfseTest', 'NfseConstantsTest', 'BatchesTest'
