@@ -63,26 +63,28 @@ class EmitesResource(Resource):
         self.resource_data[self.url_attribute_name] = value
 
     def parse_links(self):
-        links = getattr(self, '_links', [])
-        self._meta['links'] = dict((item['rel'], item) for item in links)
+        if hasattr(self, '_links'):
+            links = self._links
+            self._meta['links'] = dict((item['rel'], item) for item in links)
 
-        # Find the resource's url
-        for item in links:
-            if item['rel'] == 'self':
-                self.url = item['href']
+            # Find the resource's url
+            for item in links:
+                if item['rel'] == 'self':
+                    self.url = item['href']
 
     def prepare_collections(self):
         self.parse_links()
-        links = getattr(self, '_links', [])
-        for item in links:
-            link_url = item['href']
-            link_name = item['rel']
+        if hasattr(self, '_links'):
+            links = self._links
+            for item in links:
+                link_url = item['href']
+                link_name = item['rel']
 
-            if (link_url == self.url) or hasattr(self, link_name):
-                continue
+                if (link_url == self.url) or hasattr(self, link_name):
+                    continue
 
-            link_collection = self._collection_from_link(link_name)
-            setattr(self, link_name, link_collection)
+                link_collection = self._collection_from_link(link_name)
+                setattr(self, link_name, link_collection)
 
     @classmethod
     def load(cls, url, **kwargs):
