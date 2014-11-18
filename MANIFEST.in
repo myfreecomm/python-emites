@@ -1,4 +1,4 @@
 include README.rst
 include requirements.txt
-recursive-include emites/tests *.py
-recursive-include emites/tests/cassettes *
+recursive-include emites_api/tests *.py
+recursive-include emites_api/tests/cassettes *
