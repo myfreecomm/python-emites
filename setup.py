@@ -27,7 +27,7 @@ class Tox(TestCommand):
 
 setuptools.setup(
     name="python-emites",
-    version="0.0.4",
+    version="0.0.5",
     packages=["emites_api"],
     include_package_data=True,  # declarations in MANIFEST.in
     install_requires=open(join(dirname(__file__), 'requirements.txt')).readlines(),
