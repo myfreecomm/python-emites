@@ -18,7 +18,7 @@ def use_cassette(*args, **kwargs):
 
 APP_CREDENTIALS = {
     'host': 'https://sandbox.emites.com.br',
-    'token': 'DD00027F4A76E4B79209ACBFBC72F68E',
+    'token': '685167D4190D94A94619487A106561E7',
 }
 
 CERTIFICATE = {

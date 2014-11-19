@@ -16,7 +16,7 @@ interactions:
     headers:
       Accept: [application/json]
       Accept-Encoding: ['gzip, deflate']
-      Authorization: [Basic REQwMDAyN0Y0QTc2RTRCNzkyMDlBQ0JGQkM3MkY2OEU6]
+      Authorization: [Basic Njg1MTY3RDQxOTBEOTRBOTQ2MTk0ODdBMTA2NTYxRTc6]
       Cache-Control: [no-cache]
       Connection: [keep-alive]
       Content-Length: ['7390']
