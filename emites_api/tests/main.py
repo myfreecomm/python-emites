@@ -510,20 +510,28 @@ class NfseTest(WithFrozenTime):
         with use_emites_cassette('nfse/create_without_description'):
             self.assertRaises(requests.HTTPError, self.api_client.nfse.create, **self.post_data)
 
-    def test_creation_without_service_values_calculation_base_does_not_fail(self):
-        del(self.post_data['service_values']['calculation_base'])
-        with use_emites_cassette('nfse/create_without_calculation_base'):
+    def test_creation_without_service_values_iss_amount_does_not_fail(self):
+        del(self.post_data['service_values']['iss_amount'])
+        with use_emites_cassette('nfse/create_without_iss_amount'):
             nfse = self.api_client.nfse.create(**self.post_data)
 
-        self.assertEqual(nfse.id, 285)
-        self.assertEqual(nfse.service_values['calculation_base'], nfse.service_values['service_amount'])
+        self.assertEqual(nfse.id, 317)
+        self.assertEqual(nfse.service_values['iss_amount'], '4.99')
+
+    def test_creation_without_service_values_nfse_liquid_amount_does_not_fail(self):
+        del(self.post_data['service_values']['nfse_liquid_amount'])
+        with use_emites_cassette('nfse/create_without_nfse_liquid_amount'):
+            nfse = self.api_client.nfse.create(**self.post_data)
+
+        self.assertEqual(nfse.id, 318)
+        self.assertEqual(nfse.service_values['nfse_liquid_amount'], nfse.service_values['service_amount'])
 
     def test_creation_without_service_values_city_tax_code_does_not_fail(self):
         del(self.post_data['service_values']['city_tax_code'])
         with use_emites_cassette('nfse/create_without_city_tax_code'):
             nfse = self.api_client.nfse.create(**self.post_data)
 
-        self.assertEqual(nfse.id, 286)
+        self.assertEqual(nfse.id, 319)
         self.assertEqual(nfse.service_values['city_tax_code'], None)
 
     def test_creation_without_service_values_cnae_code_does_not_fail(self):
@@ -531,7 +539,7 @@ class NfseTest(WithFrozenTime):
         with use_emites_cassette('nfse/create_without_cnae_code'):
             nfse = self.api_client.nfse.create(**self.post_data)
 
-        self.assertEqual(nfse.id, 287)
+        self.assertEqual(nfse.id, 320)
         self.assertEqual(nfse.service_values['cnae_code'], None)
 
     def test_creation_without_service_values_deduction_amount_does_not_fail(self):
@@ -539,32 +547,24 @@ class NfseTest(WithFrozenTime):
         with use_emites_cassette('nfse/create_without_deduction_amount'):
             nfse = self.api_client.nfse.create(**self.post_data)
 
-        self.assertEqual(nfse.id, 288)
-        self.assertEqual(nfse.service_values['deduction_amount'], None)
+        self.assertEqual(nfse.id, 321)
+        self.assertEqual(nfse.service_values['deduction_amount'], '0.0')
 
     def test_creation_without_service_values_discount_conditioning_amount_fails(self):
         del(self.post_data['service_values']['discount_conditioning_amount'])
         with use_emites_cassette('nfse/create_without_discount_conditioning_amount'):
             nfse = self.api_client.nfse.create(**self.post_data)
 
-        self.assertEqual(nfse.id, 289)
+        self.assertEqual(nfse.id, 322)
         self.assertEqual(nfse.service_values['discount_conditioning_amount'], '0')
 
-    def test_creation_without_service_values_iss_amount_does_not_fail(self):
-        del(self.post_data['service_values']['iss_amount'])
-        with use_emites_cassette('nfse/create_without_iss_amount'):
+    def test_creation_without_service_values_calculation_base_does_not_fail(self):
+        del(self.post_data['service_values']['calculation_base'])
+        with use_emites_cassette('nfse/create_without_calculation_base'):
             nfse = self.api_client.nfse.create(**self.post_data)
 
-        self.assertEqual(nfse.id, 290)
-        self.assertEqual(nfse.service_values['iss_amount'], '4.99')
-
-    def test_creation_without_service_values_nfse_liquid_amount_fails(self):
-        del(self.post_data['service_values']['nfse_liquid_amount'])
-        with use_emites_cassette('nfse/create_without_nfse_liquid_amount'):
-            nfse = self.api_client.nfse.create(**self.post_data)
-
-        self.assertEqual(nfse.id, 291)
-        self.assertEqual(nfse.service_values['nfse_liquid_amount'], nfse.service_values['service_amount'])
+        self.assertEqual(nfse.id, 323)
+        self.assertEqual(nfse.service_values['calculation_base'], nfse.service_values['service_amount'])
 
     def test_creation_with_taker_information(self):
         del(self.post_data['taker_id'])

@@ -9,7 +9,7 @@ interactions:
     headers:
       Accept: [application/json]
       Accept-Encoding: ['gzip, deflate']
-      Authorization: [Basic REQwMDAyN0Y0QTc2RTRCNzkyMDlBQ0JGQkM3MkY2OEU6]
+      Authorization: [Basic Njg1MTY3RDQxOTBEOTRBOTQ2MTk0ODdBMTA2NTYxRTc6]
       Cache-Control: [no-cache]
       Connection: [keep-alive]
       Content-Length: ['441']
@@ -18,14 +18,14 @@ interactions:
     method: POST
     uri: https://sandbox.emites.com.br:443/api/v1/nfse
   response:
-    body: {string: '{"_links": [{"href": "https://sandbox.emites.com.br/api/v1/nfse/286",
-        "method": "GET", "rel": "self"}, {"href": "https://sandbox.emites.com.br/api/v1/nfse/286",
-        "method": "DELETE", "rel": "destroy"}, {"href": "https://sandbox.emites.com.br/api/v1/nfse/286/status",
-        "method": "GET", "rel": "status"}, {"href": "https://sandbox.emites.com.br/api/v1/nfse/286/cancel",
-        "method": "POST", "rel": "cancel"}, {"href": "https://sandbox.emites.com.br/api/v1/nfse/286/mirror",
-        "method": "GET", "rel": "mirror"}, {"href": "https://sandbox.emites.com.br/api/v1/nfse/286/xml",
-        "method": "GET", "rel": "xml"}, {"href": "https://sandbox.emites.com.br/api/v1/nfse/286/pdf",
-        "method": "GET", "rel": "pdf"}, {"href": "https://sandbox.emites.com.br/api/v1/nfse/286/history",
+    body: {string: !!python/unicode '{"_links": [{"href": "https://sandbox.emites.com.br/api/v1/nfse/319",
+        "method": "GET", "rel": "self"}, {"href": "https://sandbox.emites.com.br/api/v1/nfse/319",
+        "method": "DELETE", "rel": "destroy"}, {"href": "https://sandbox.emites.com.br/api/v1/nfse/319/status",
+        "method": "GET", "rel": "status"}, {"href": "https://sandbox.emites.com.br/api/v1/nfse/319/cancel",
+        "method": "POST", "rel": "cancel"}, {"href": "https://sandbox.emites.com.br/api/v1/nfse/319/mirror",
+        "method": "GET", "rel": "mirror"}, {"href": "https://sandbox.emites.com.br/api/v1/nfse/319/xml",
+        "method": "GET", "rel": "xml"}, {"href": "https://sandbox.emites.com.br/api/v1/nfse/319/pdf",
+        "method": "GET", "rel": "pdf"}, {"href": "https://sandbox.emites.com.br/api/v1/nfse/319/history",
         "method": "GET", "rel": "history"}], "nfse_errors": [], "service_values":
         {"deduction_amount": "0.00", "discount_conditioning_amount": "0.0", "city_tax_code":
         null, "calculation_base": "99.99", "service_amount": "99.99", "pis_amount":
@@ -44,22 +44,22 @@ interactions:
         de Testes Ltda ME", "cpf": null, "contact": {"phone": "21000000000", "email":
         "financeiro@python-emites.test"}, "special_situation": 0, "foreign_taker":
         false}, "emitter_id": 13, "batch_id": null, "mirror_url": null, "xml_url":
-        null, "pdf_url": null, "id": 286, "status": "scheduled", "description": "Agendado
+        null, "pdf_url": null, "id": 319, "status": "scheduled", "description": "Agendado
         o processamento da NFSe", "nfse_key": null, "nfse_number": null, "send_nfse_taker":
-        false, "number": 2094379164, "serie": "TESTE", "rps_type": 1, "emission_date":
+        false, "number": 2094379183, "serie": "TESTE", "rps_type": 1, "emission_date":
         "2014-02-19T19:04:00", "operation_nature": 1, "national_simple_optant": false,
         "cultural_promoter": false, "rps_situation": 1, "other_informations": null,
         "competence": null, "special_regime": null, "emitter_city_code": 3304557}'}
     headers:
-      Allow: ['GET, POST, HEAD, OPTIONS']
-      Connection: [keep-alive]
-      Content-Length: ['2670']
-      Content-Type: [application/json]
-      Date: ['Fri, 14 Nov 2014 20:30:30 GMT']
-      Location: ['https://sandbox.emites.com.br/api/v1/nfse/286']
-      Server: [nginx/1.4.7]
-      User-Agent: [emites-sandbox-v1]
-      Vary: ['Accept, Cookie']
-      X-Frame-Options: [SAMEORIGIN]
+      allow: ['GET, POST, HEAD, OPTIONS']
+      connection: [keep-alive]
+      content-length: ['2670']
+      content-type: [application/json]
+      date: ['Tue, 25 Nov 2014 17:07:13 GMT']
+      location: ['https://sandbox.emites.com.br/api/v1/nfse/319']
+      server: [nginx/1.4.7]
+      user-agent: [emites-sandbox-v1]
+      vary: ['Accept, Cookie']
+      x-frame-options: [SAMEORIGIN]
     status: {code: 202, message: ACCEPTED}
 version: 1

@@ -9,7 +9,7 @@ interactions:
     headers:
       Accept: [application/json]
       Accept-Encoding: ['gzip, deflate']
-      Authorization: [Basic REQwMDAyN0Y0QTc2RTRCNzkyMDlBQ0JGQkM3MkY2OEU6]
+      Authorization: [Basic Njg1MTY3RDQxOTBEOTRBOTQ2MTk0ODdBMTA2NTYxRTc6]
       Cache-Control: [no-cache]
       Connection: [keep-alive]
       Content-Length: ['442']
@@ -25,7 +25,7 @@ interactions:
       connection: [keep-alive]
       content-length: ['71']
       content-type: [application/json]
-      date: ['Fri, 14 Nov 2014 19:42:06 GMT']
+      date: ['Tue, 25 Nov 2014 17:07:20 GMT']
       server: [nginx/1.4.7]
       user-agent: [emites-sandbox-v1]
       vary: ['Accept, Cookie']
